@@ -13,8 +13,9 @@ export default function() {
   const db = SQLite.openDatabase('test.db');
   const [isLoading, setIsLoading] = useState(true);
   const [scenes, setScenes] = useState([]);
-  const [currentSceneText, setCurrentSceneText] = useState(undefined);
-  const [currentNextSceneID, setCurrentNextSceneID] = useState(undefined);
+  const [currentSceneText, setCurrentSceneText] = useState("");
+  const [currentNextSceneID, setCurrentNextSceneID] = useState("");
+  const [sceneTextInRun, setSceneTextInRun] = useState("");
 
   useEffect(() => {
     db.transaction(tx => {
@@ -46,8 +47,8 @@ export default function() {
           let existingScenes = [...scenes];
           existingScenes.push({ id: resultSet.insertId, scene_text: currentSceneText, next_scene_id: currentNextSceneID});
           setScenes(existingScenes);
-          setCurrentSceneText(undefined);
-          setCurrentNextSceneID(undefined);
+          setCurrentSceneText("");
+          setCurrentNextSceneID("");
         },
         (txObj, error) => console.log(error)
       );
@@ -65,12 +66,18 @@ export default function() {
     });
   };
 
+  const showSceneByID = () => {
+    setSceneTextInRun(scenes.at(0).scene_text);
+  }
+
   return (
     <View style={styles.container}>
       <TextInput value={currentSceneText} placeholder='Scene Text' onChangeText={setCurrentSceneText}/>
       <TextInput value={currentNextSceneID} placeholder='Next Scene ID' onChangeText={setCurrentNextSceneID}/>
       <Button title='Add Scene' onPress={addScene}/>
       {showScenes()}
+      <Button title='Show Scene' onPress={showSceneByID}/>
+      <Text>{sceneTextInRun}</Text>
       <StatusBar style="auto" />
     </View>
   );
