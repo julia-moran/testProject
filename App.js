@@ -16,6 +16,7 @@ export default function() {
   const [currentSceneText, setCurrentSceneText] = useState("");
   const [currentNextSceneID, setCurrentNextSceneID] = useState("");
   const [sceneTextInRun, setSceneTextInRun] = useState("");
+  const [nextSceneInRun, setNextSceneInRun] = useState("");
 
   useEffect(() => {
     db.transaction(tx => {
@@ -68,6 +69,13 @@ export default function() {
 
   const showSceneByID = () => {
     setSceneTextInRun(scenes.at(0).scene_text);
+    setNextSceneInRun(scenes.at(0).next_scene_id);
+  }
+
+  const getNextScene = () => {
+    let nextSceneID = (parseInt(nextSceneInRun)) - 1;
+    setSceneTextInRun(scenes.at(nextSceneID).scene_text);
+    setNextSceneInRun(scenes.at(nextSceneID).next_scene_id);
   }
 
   return (
@@ -76,8 +84,10 @@ export default function() {
       <TextInput value={currentNextSceneID} placeholder='Next Scene ID' onChangeText={setCurrentNextSceneID}/>
       <Button title='Add Scene' onPress={addScene}/>
       {showScenes()}
-      <Button title='Show Scene' onPress={showSceneByID}/>
+      <Button title='Start Story' onPress={showSceneByID}/>
       <Text>{sceneTextInRun}</Text>
+      <Text>{nextSceneInRun}</Text>
+      <Button title='Next Scene' onPress={getNextScene}/>
       <StatusBar style="auto" />
     </View>
   );
