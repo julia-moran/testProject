@@ -12,17 +12,18 @@ AppRegistry.registerComponent('main', () => App);
 export default function() {
   const db = SQLite.openDatabase('test.db');
   const [isLoading, setIsLoading] = useState(true);
-  const [names, setNames] = useState([]);
-  const [currentName, setCurrentName] = useState(undefined);
+  const [scenes, setScenes] = useState([]);
+  const [currentSceneText, setCurrentSceneText] = useState(undefined);
+  const [currentNextSceneID, setCurrentNextSceneID] = useState(undefined);
 
   useEffect(() => {
     db.transaction(tx => {
-      tx.executeSql('CREATE TABLE IF NOT EXISTS names (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)')
+      tx.executeSql('CREATE TABLE IF NOT EXISTS scene (id INTEGER PRIMARY KEY AUTOINCREMENT, scene_text TEXT, next_scene_id INTEGER)')
     });
 
     db.transaction(tx => {
-      tx.executeSql('SELECT * FROM names', null,
-        (txObj, resultSet) => setNames(resultSet.rows._array),
+      tx.executeSql('SELECT * FROM scene', null,
+        (txObj, resultSet) => setScenes(resultSet.rows._array),
         (txObj, error) => console.log(error)
       );
     });
@@ -33,30 +34,32 @@ export default function() {
   if (isLoading) {
     return (
       <View style={styles.container}>
-        <Text>Loading names...</Text>
+        <Text>Loading scenes...</Text>
       </View>
     )
   }
 
-  const addName = () => {
+  const addScene = () => {
     db.transaction(tx => {
-      tx.executeSql('INSERT INTO names (name) values (?)', [currentName],
+      tx.executeSql('INSERT INTO scene (scene_text, next_scene_id) values (?, ?)', [currentSceneText, currentNextSceneID],
         (txObj, resultSet) => {
-          let existingNames = [...names];
-          existingNames.push({ id: resultSet.insertId, name: currentName});
-          setNames(existingNames);
-          setCurrentName(undefined);
+          let existingScenes = [...scenes];
+          existingScenes.push({ id: resultSet.insertId, scene_text: currentSceneText, next_scene_id: currentNextSceneID});
+          setScenes(existingScenes);
+          setCurrentSceneText(undefined);
+          setCurrentNextSceneID(undefined);
         },
         (txObj, error) => console.log(error)
       );
     });
   }
 
-  const showNames = () => {
-    return names.map((name, index) => {
+  const showScenes = () => {
+    return scenes.map((scene, index) => {
       return (
-        <View style={styles.row}>
-          <Text>{name.name}</Text>
+        <View key={index} style={styles.row}>
+          <Text>{scene.scene_text}</Text>
+          <Text>{scene.next_scene_id}</Text>
         </View>
       );
     });
@@ -64,9 +67,10 @@ export default function() {
 
   return (
     <View style={styles.container}>
-      <TextInput value={currentName} placeholder='name' onChangeText={setCurrentName}/>
-      <Button title='Add Name' onPress={addName}/>
-      {showNames()}
+      <TextInput value={currentSceneText} placeholder='Scene Text' onChangeText={setCurrentSceneText}/>
+      <TextInput value={currentNextSceneID} placeholder='Next Scene ID' onChangeText={setCurrentNextSceneID}/>
+      <Button title='Add Scene' onPress={addScene}/>
+      {showScenes()}
       <StatusBar style="auto" />
     </View>
   );
