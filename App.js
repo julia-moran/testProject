@@ -30,7 +30,7 @@ export default function() {
     });
 
     db.transaction(tx => {
-      tx.executeSql('CREATE TABLE IF NOT EXISTS choice (choice_id INTEGER PRIMARY KEY AUTOINCREMENT, scene_id INTEGER REFERENCES scene4(id), choice_text TEXT, next_scene_id INTEGER)')
+      tx.executeSql('CREATE TABLE IF NOT EXISTS choice2 (id INTEGER PRIMARY KEY AUTOINCREMENT, scene_id INTEGER REFERENCES scene4(id), choice_text TEXT, next_scene_id INTEGER)')
     });
 
     db.transaction(tx => {
@@ -41,7 +41,7 @@ export default function() {
     });
 
     db.transaction(tx => {
-      tx.executeSql('SELECT * FROM choice', null,
+      tx.executeSql('SELECT * FROM choice2', null,
         (txObj, resultSet) => setChoices(resultSet.rows._array),
         (txObj, error) => console.log(error)
       );
@@ -76,7 +76,7 @@ export default function() {
 
   const addChoice = () => {
     db.transaction(tx => {
-      tx.executeSql('INSERT INTO choice (scene_id, choice_text, next_scene_id) values (?, ?, ?)', [currentChoiceSceneID, currentChoiceText, currentChoiceLeadsToID],
+      tx.executeSql('INSERT INTO choice2 (scene_id, choice_text, next_scene_id) values (?, ?, ?)', [currentChoiceSceneID, currentChoiceText, currentChoiceLeadsToID],
         (txObj, resultChoices) => {
           let existingChoices = [...choices];
           existingChoices.push({ id: resultChoices.insertId, scene_id: currentChoiceSceneID, choice_text: currentChoiceText, next_scene_id: currentChoiceLeadsToID});
@@ -95,7 +95,7 @@ export default function() {
   const getChoices = (sceneID) => {
     console.log(sceneID);
     db.transaction(tx => {
-      tx.executeSql('SELECT * FROM choice WHERE scene_id = ?', [sceneID],
+      tx.executeSql('SELECT * FROM choice2 WHERE scene_id = ?', [sceneID],
         (txObj, resultChoices) => {
           setChoicesInRun(resultChoices.rows._array);
           //console.log(choicesInRun);
@@ -110,6 +110,7 @@ export default function() {
     return scenes.map((scene, index) => {
       return (
         <View key={index} style={styles.row}>
+          <Text>{scene.id}</Text>
           <Text>{scene.scene_text}</Text>
           <Text>{scene.next_scene_id}</Text>
         </View>
@@ -121,6 +122,7 @@ export default function() {
     return choices.map((choice, index) => {
       return (
         <View key={index} style={styles.row}>
+          <Text>{choice.id}</Text>
           <Text>{choice.choice_text}</Text>
           <Text>{choice.scene_id}</Text>
           <Text>{choice.next_scene_id}</Text>
@@ -134,23 +136,37 @@ export default function() {
     return choicesInRun.map((choiceInRun, index) => {
       return (
         <View key={index} style={styles.row}>
-          <Button title={choiceInRun.choice_text}/>
+          <Button title={choiceInRun.choice_text} onPress={() => {goToSceneByChoice(choiceInRun.id)}}/>
         </View>
       );
     });
+  };
+
+  const goToSceneByChoice = (choiceID) => {
+    let choiceIndex = (parseInt(choiceID)) - 1;
+    console.log("Choice ID: " + choiceID);
+    let sceneIndex = (parseInt(choices.at(choiceIndex).next_scene_id)) - 1;
+    console.log("Next Scene: " + sceneIndex);
+
+
+    setSceneTextInRun(scenes.at(sceneIndex).scene_text);
+    setNextSceneInRun(scenes.at(sceneIndex).next_scene_id);
+    setSceneIDInRun(scenes.at(sceneIndex).id);
+    getChoices(scenes.at(sceneIndex).id);
   };
 
   const showSceneByID = () => {
     setSceneTextInRun(scenes.at(0).scene_text);
     setNextSceneInRun(scenes.at(0).next_scene_id);
     setSceneIDInRun(scenes.at(0).id);
-    //getChoices();
+    //
   };
 
   const getNextScene = () => {
     let nextSceneID = (parseInt(nextSceneInRun)) - 1;
     setSceneTextInRun(scenes.at(nextSceneID).scene_text);
     setNextSceneInRun(scenes.at(nextSceneID).next_scene_id);
+    console.log("Scene to go: " + nextSceneInRun);
     setSceneIDInRun(scenes.at(nextSceneID).id);
     getChoices(scenes.at(nextSceneID).id);
   };
