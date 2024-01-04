@@ -5,9 +5,9 @@ import * as SQLite from 'expo-sqlite';
 //import App from './App';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import SceneWriter from './screens/SceneWriter';
+import WriteScene from './screens/WriteScene';
 import RunStory from './screens/RunStory';
-
+import StoryGraph from './screens/StoryGraph';
 
 const Stack = createNativeStackNavigator();
 
@@ -19,8 +19,9 @@ function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName='Scene Writer'>
-        <Stack.Screen name="Scene Writer" component={SceneWriter}/>
+      <Stack.Navigator initialRouteName='Story Graph'>
+        <Stack.Screen name="Story Graph" component={StoryGraph}/>
+        <Stack.Screen name="Write Scene" component={WriteScene}/>
         <Stack.Screen name="Run Story" component={RunStory}/>
       </Stack.Navigator>
 
@@ -30,19 +31,3 @@ function App() {
 }
 
 export default App;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'stretch',
-    justifyContent: 'space-between',
-    margin: 8
-  }
-});
