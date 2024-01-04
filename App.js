@@ -171,6 +171,16 @@ export default function() {
     getChoices(scenes.at(nextSceneID).id);
   };
 
+  const displayNextSceneButton = () => {
+    if(nextSceneInRun != "") {
+      return (
+        <View style={styles.row}>
+          <Button title='Next Scene' onPress={getNextScene}/>
+        </View>
+      )
+    }
+  }
+
   return (
     <View style={styles.container}>
       <TextInput value={currentSceneText} placeholder='Scene Text' onChangeText={setCurrentSceneText}/>
@@ -188,7 +198,7 @@ export default function() {
       <Text>{nextSceneInRun}</Text>
       <Text>{sceneIDInRun}</Text>
       {showChoiceButtons()}
-      <Button title='Next Scene' onPress={getNextScene}/>
+      {displayNextSceneButton()}
       
       <StatusBar style="auto" />
     </View>
