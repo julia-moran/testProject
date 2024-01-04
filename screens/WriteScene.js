@@ -80,31 +80,6 @@ export default function WriteScene({navigation}) {
         });
       };
 
-      const showScenes = () => {
-        return scenes.map((scene, index) => {
-          return (
-            <View key={index} style={styles.row}>
-              <Text>{scene.id}</Text>
-              <Text>{scene.scene_text}</Text>
-              <Text>{scene.next_scene_id}</Text>
-            </View>
-          );
-        });
-      };
-    
-        const showChoices = () => {
-        return choices.map((choice, index) => {
-          return (
-            <View key={index} style={styles.row}>
-              <Text>{choice.id}</Text>
-              <Text>{choice.choice_text}</Text>
-              <Text>{choice.scene_id}</Text>
-              <Text>{choice.next_scene_id}</Text>
-            </View>
-          );
-        });
-      };
-
     return (
         <View style={styles.container}>
           <Text>Test Scene Writer Screen</Text>
@@ -116,8 +91,6 @@ export default function WriteScene({navigation}) {
           <TextInput value={currentChoiceText} placeholder='Choice Text' onChangeText={setCurrentChoiceText}/>
           <TextInput value={currentChoiceLeadsToID} placeholder='Choice Leads to Scene ID' onChangeText={setCurrentChoiceLeadsToID}/>
           <Button title='Add Choice' onPress={addChoice}/>
-          {showScenes()}
-          {showChoices()}
           <Button title="Run Story" onPress={() => navigation.navigate("Run Story")}/>
         </View>
       )

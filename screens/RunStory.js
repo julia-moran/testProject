@@ -74,9 +74,11 @@ export default function RunStory({navigation}) {
       };
     
       const goToSceneByChoice = (choiceID) => {
-        let choiceIndex = (parseInt(choiceID)) - 1;
+        let choiceIndex = choices.findIndex(choice => choice.id === choiceID)
         console.log("Choice ID: " + choiceID);
-        let sceneIndex = (parseInt(choices.at(choiceIndex).next_scene_id)) - 1;
+        let nextSceneID = choices.at(choiceIndex).next_scene_id;
+        let sceneIndex = scenes.findIndex(scene => scene.id === nextSceneID);
+        
         console.log("Next Scene: " + sceneIndex);
     
     
@@ -94,7 +96,8 @@ export default function RunStory({navigation}) {
       };
     
       const getNextScene = () => {
-        let nextSceneID = (parseInt(nextSceneInRun)) - 1;
+        let nextSceneID = scenes.findIndex(scene => scene.id === nextSceneInRun);
+        
         setSceneTextInRun(scenes.at(nextSceneID).scene_text);
         setNextSceneInRun(scenes.at(nextSceneID).next_scene_id);
         console.log("Scene to go: " + nextSceneInRun);
