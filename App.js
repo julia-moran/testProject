@@ -8,6 +8,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import WriteScene from './screens/WriteScene';
 import RunStory from './screens/RunStory';
 import StoryGraph from './screens/StoryGraph';
+import EditScene from './screens/EditScene';
 
 const Stack = createNativeStackNavigator();
 
@@ -23,6 +24,7 @@ function App() {
         <Stack.Screen name="Story Graph" component={StoryGraph}/>
         <Stack.Screen name="Write Scene" component={WriteScene}/>
         <Stack.Screen name="Run Story" component={RunStory}/>
+        <Stack.Screen name="Edit Scene" component={EditScene}/>
       </Stack.Navigator>
 
     </NavigationContainer>

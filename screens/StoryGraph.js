@@ -44,6 +44,14 @@ export default function StoryGraph({navigation}) {
   }
 
   const showScenes = () => {
+
+    db.transaction(tx => {
+      tx.executeSql('SELECT * FROM scene4', null,
+        (txObj, resultSet) => setScenes(resultSet.rows._array),
+        (txObj, error) => console.log(error)
+      );
+    });
+    
     return scenes.map((scene, index) => {
       return (
         <View key={index} style={styles.row}>
@@ -51,6 +59,7 @@ export default function StoryGraph({navigation}) {
           <Text>{scene.scene_text}</Text>
           <Text>{scene.next_scene_id}</Text>
           <Button title="Delete" onPress={() => deleteScene(scene.id)}/>
+          <Button title="Edit" onPress={() => navigation.navigate("Edit Scene", {sceneID: scene.id})}/>
         </View>
       );
     });
@@ -77,7 +86,7 @@ export default function StoryGraph({navigation}) {
             let existingScenes = [...scenes];
             const indexToUpdate = existingScenes.findIndex(scene => scene.id === id);
             existingScenes[indexToUpdate].scene_text = currentSceneText;
-            setScenes(currentSceneText);
+            setScenes(existingScenes);
             setCurrentSceneText("");
           }
         },

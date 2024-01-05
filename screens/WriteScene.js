@@ -83,7 +83,7 @@ export default function WriteScene({navigation}) {
     return (
         <View style={styles.container}>
           <Text>Test Scene Writer Screen</Text>
-          <TextInput value={currentSceneText} placeholder='Scene Text' onChangeText={setCurrentSceneText}/>
+          <TextInput value={currentSceneText} placeholder='Scene Text' onChangeText={setCurrentSceneText} multiline={true}/>
           <TextInput value={currentNextSceneID} placeholder='Next Scene ID' onChangeText={setCurrentNextSceneID}/>
           <Button title='Add Scene' onPress={addScene}/>
 

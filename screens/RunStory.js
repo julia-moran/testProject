@@ -97,7 +97,7 @@ export default function RunStory({navigation}) {
     
       const getNextScene = () => {
         let nextSceneID = scenes.findIndex(scene => scene.id === nextSceneInRun);
-        
+        console.log("Test getNextScene: " + nextSceneID);
         setSceneTextInRun(scenes.at(nextSceneID).scene_text);
         setNextSceneInRun(scenes.at(nextSceneID).next_scene_id);
         console.log("Scene to go: " + nextSceneInRun);
