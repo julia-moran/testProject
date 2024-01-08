@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button, Alert } from 'react-native';
 import * as SQLite from 'expo-sqlite';
 
 export default function StoryGraph({navigation}) {
@@ -58,8 +58,8 @@ export default function StoryGraph({navigation}) {
           <Text>{scene.id}</Text>
           <Text>{scene.scene_text}</Text>
           <Text>{scene.next_scene_id}</Text>
-          <Button title="Delete" onPress={() => deleteScene(scene.id)}/>
           <Button title="Edit" onPress={() => navigation.navigate("Edit Scene", {sceneID: scene.id})}/>
+          <Button title="Delete" onPress={() => deleteSceneAlert(scene.id)}/>
         </View>
       );
     });
@@ -95,6 +95,13 @@ export default function StoryGraph({navigation}) {
     });
   };
 */
+  const deleteSceneAlert = (sceneID) => 
+    Alert.alert('Delete Scene', 'Are you sure you want to delete this scene?', [
+      {text: 'Cancel',},
+      {text: 'OK', onPress: () => deleteScene(sceneID)},
+    ]);
+
+
   const deleteScene = (id) => {
     db.transaction(tx => {
       tx.executeSql('DELETE FROM scene4 WHERE id = ?', [id],
