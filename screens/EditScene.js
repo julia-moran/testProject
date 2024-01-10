@@ -3,6 +3,8 @@ import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
 import * as SQLite from 'expo-sqlite';
 
 export default function EditScene({navigation, route}) {
+    const storyID = route.params.storyID;
+
     const db = SQLite.openDatabase('test.db');
     const [isLoading, setIsLoading] = useState(true);
     const [scenes, setScenes] = useState([]);
@@ -15,28 +17,28 @@ export default function EditScene({navigation, route}) {
     const [currentChoiceLeadsToID, setCurrentChoiceLeadsToID] = useState("");
 
     useEffect(() => {
-        db.transaction(tx => {
-            tx.executeSql('CREATE TABLE IF NOT EXISTS scene4 (id INTEGER PRIMARY KEY AUTOINCREMENT, scene_text TEXT, next_scene_id INTEGER)')
-        });
 
-        db.transaction(tx => {
-            tx.executeSql('CREATE TABLE IF NOT EXISTS choice2 (id INTEGER PRIMARY KEY AUTOINCREMENT, scene_id INTEGER REFERENCES scene4(id), choice_text TEXT, next_scene_id INTEGER)')
-        });
-
-        db.transaction(tx => {
-            tx.executeSql('SELECT * FROM scene4', null,
-            (txObj, resultSet) => setScenes(resultSet.rows._array),
-            (txObj, error) => console.log(error)
-            );
-        });
-
-        db.transaction(tx => {
-            tx.executeSql('SELECT * FROM choice2', null,
-            (txObj, resultSet) => setChoices(resultSet.rows._array),
-            (txObj, error) => console.log(error)
-            );
-        });
-
+      db.transaction(tx => {
+        tx.executeSql('CREATE TABLE IF NOT EXISTS scene5 (id INTEGER PRIMARY KEY AUTOINCREMENT, story_id INTEGER REFERENCES story(id), scene_text TEXT, next_scene_id INTEGER)')
+      });
+  
+      db.transaction(tx => {
+        tx.executeSql('CREATE TABLE IF NOT EXISTS choice3 (id INTEGER PRIMARY KEY AUTOINCREMENT, story_id INTEGER REFERENCES story(id), scene_id INTEGER REFERENCES scene5(id), choice_text TEXT, next_scene_id INTEGER)')
+      });
+  
+      db.transaction(tx => {
+        tx.executeSql('SELECT * FROM scene5 WHERE story_id = ?', [storyID],
+          (txObj, resultSet) => setScenes(resultSet.rows._array),
+          (txObj, error) => console.log(error)
+        );
+      });
+  
+      db.transaction(tx => {
+        tx.executeSql('SELECT * FROM choice3 WHERE story_id = ?', [storyID],
+          (txObj, resultSet) => setChoices(resultSet.rows._array),
+          (txObj, error) => console.log(error)
+        );
+      });
         
         setIsLoading(false);
         }, []);
@@ -81,7 +83,7 @@ export default function EditScene({navigation, route}) {
         console.log("Update next scene: " + currentNextSceneID);
         if(currentSceneText != "") {
           db.transaction(tx => {
-          tx.executeSql('UPDATE scene4 SET scene_text = ? WHERE id = ?', [currentSceneText, id],
+          tx.executeSql('UPDATE scene5 SET scene_text = ? WHERE id = ? and story_id = ?', [currentSceneText, id, storyID],
             (txObj, resultSet) => {
               if (resultSet.rowsAffected) {
                 let existingScenes = [...scenes];
@@ -98,7 +100,7 @@ export default function EditScene({navigation, route}) {
         
         if(currentNextSceneID != "") {
           db.transaction(tx => {
-            tx.executeSql('UPDATE scene4 SET next_scene_id = ? WHERE id = ?', [currentNextSceneID, id],
+            tx.executeSql('UPDATE scene5 SET next_scene_id = ? WHERE id = ? and story_id = ?', [currentNextSceneID, id, storyID],
               (txObj, resultSet) => {
                 if (resultSet.rowsAffected) {
                   let existingScenes = [...scenes];
@@ -114,7 +116,7 @@ export default function EditScene({navigation, route}) {
         }
         
 
-        navigation.navigate("Story Graph");
+        navigation.navigate("Story Graph", {storyID: storyID});
     };
 
     const trackChanges = (text) => {
@@ -126,6 +128,7 @@ export default function EditScene({navigation, route}) {
     return (
         <View style={styles.container}>
             <Text>Scene: {route.params.sceneID}</Text>
+            <Text>Story: {storyID}</Text>
             <TextInput defaultValue={getSceneText(route.params.sceneID)} onChangeText={trackChanges} multiline={true}/>
             <TextInput keyboardType='number-pad' defaultValue={getNextSceneID(route.params.sceneID)} onChangeText={setCurrentNextSceneID}/>
             <Button title="Save Changes" onPress={() => updateSceneText(route.params.sceneID)}/>

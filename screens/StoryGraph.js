@@ -2,30 +2,31 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TextInput, Button, Alert } from 'react-native';
 import * as SQLite from 'expo-sqlite';
 
-export default function StoryGraph({navigation}) {
+export default function StoryGraph({navigation, route}) {
   const db = SQLite.openDatabase('test.db');
   const [isLoading, setIsLoading] = useState(true);
   const [scenes, setScenes] = useState([]);
   const [choices, setChoices] = useState([]);
+  const storyID = route.params.storyID;
 
   useEffect(() => {
     db.transaction(tx => {
-      tx.executeSql('CREATE TABLE IF NOT EXISTS scene4 (id INTEGER PRIMARY KEY AUTOINCREMENT, scene_text TEXT, next_scene_id INTEGER)')
+      tx.executeSql('CREATE TABLE IF NOT EXISTS scene5 (id INTEGER PRIMARY KEY AUTOINCREMENT, story_id INTEGER REFERENCES story(id), scene_text TEXT, next_scene_id INTEGER)')
     });
 
     db.transaction(tx => {
-      tx.executeSql('CREATE TABLE IF NOT EXISTS choice2 (id INTEGER PRIMARY KEY AUTOINCREMENT, scene_id INTEGER REFERENCES scene4(id), choice_text TEXT, next_scene_id INTEGER)')
+      tx.executeSql('CREATE TABLE IF NOT EXISTS choice3 (id INTEGER PRIMARY KEY AUTOINCREMENT, story_id INTEGER REFERENCES story(id), scene_id INTEGER REFERENCES scene5(id), choice_text TEXT, next_scene_id INTEGER)')
     });
 
     db.transaction(tx => {
-      tx.executeSql('SELECT * FROM scene4', null,
+      tx.executeSql('SELECT * FROM scene5 WHERE story_id = ?', [storyID],
         (txObj, resultSet) => setScenes(resultSet.rows._array),
         (txObj, error) => console.log(error)
       );
     });
 
     db.transaction(tx => {
-      tx.executeSql('SELECT * FROM choice2', null,
+      tx.executeSql('SELECT * FROM choice3 WHERE story_id = ?', [storyID],
         (txObj, resultSet) => setChoices(resultSet.rows._array),
         (txObj, error) => console.log(error)
       );
@@ -46,7 +47,7 @@ export default function StoryGraph({navigation}) {
   const showScenes = () => {
 
     db.transaction(tx => {
-      tx.executeSql('SELECT * FROM scene4', null,
+      tx.executeSql('SELECT * FROM scene5 WHERE story_id = ?', [storyID],
         (txObj, resultSet) => setScenes(resultSet.rows._array),
         (txObj, error) => console.log(error)
       );
@@ -58,7 +59,7 @@ export default function StoryGraph({navigation}) {
           <Text>{scene.id}</Text>
           <Text>{scene.scene_text}</Text>
           <Text>{scene.next_scene_id}</Text>
-          <Button title="Edit" onPress={() => navigation.navigate("Edit Scene", {sceneID: scene.id})}/>
+          <Button title="Edit" onPress={() => navigation.navigate("Edit Scene", {sceneID: scene.id, storyID: storyID})}/>
           <Button title="Delete" onPress={() => deleteSceneAlert(scene.id)}/>
         </View>
       );
@@ -66,6 +67,13 @@ export default function StoryGraph({navigation}) {
   };
 
   const showChoices = () => {
+    db.transaction(tx => {
+      tx.executeSql('SELECT * FROM choice3 WHERE story_id = ?', [storyID],
+        (txObj, resultSet) => setChoices(resultSet.rows._array),
+        (txObj, error) => console.log(error)
+      );
+    });
+
     return choices.map((choice, index) => {
       return (
         <View key={index} style={styles.row}>
@@ -104,7 +112,7 @@ export default function StoryGraph({navigation}) {
 
   const deleteScene = (id) => {
     db.transaction(tx => {
-      tx.executeSql('DELETE FROM scene4 WHERE id = ?', [id],
+      tx.executeSql('DELETE FROM scene5 WHERE id = ? and story_id = ?', [id, storyID],
         (txObj, resultSet) => {
           if (resultSet.rowsAffected > 0) {
             let existingScenes = [...scenes].filter(scene => scene.id !== id);
@@ -118,10 +126,11 @@ export default function StoryGraph({navigation}) {
 
   return (
     <View style={styles.container}>
+      <Text>Story: {storyID}</Text>
       {showScenes()}
       {showChoices()}
-      <Button title="New Scene" onPress={() => navigation.navigate("Write Scene")}/>
-      <Button title="Run Story" onPress={() => navigation.navigate("Run Story")}/>
+      <Button title="New Scene" onPress={() => navigation.navigate("Write Scene", {storyID: storyID})}/>
+      <Button title="Run Story" onPress={() => navigation.navigate("Run Story", {storyID: storyID})}/>
     </View>    
 
   )

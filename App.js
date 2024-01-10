@@ -9,6 +9,7 @@ import WriteScene from './screens/WriteScene';
 import RunStory from './screens/RunStory';
 import StoryGraph from './screens/StoryGraph';
 import EditScene from './screens/EditScene';
+import SelectStory from './screens/SelectStory';
 
 const Stack = createNativeStackNavigator();
 
@@ -20,7 +21,8 @@ function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName='Story Graph'>
+      <Stack.Navigator initialRouteName='Select Story'>
+        <Stack.Screen name="Select Story" component={SelectStory}/>
         <Stack.Screen name="Story Graph" component={StoryGraph}/>
         <Stack.Screen name="Write Scene" component={WriteScene}/>
         <Stack.Screen name="Run Story" component={RunStory}/>
