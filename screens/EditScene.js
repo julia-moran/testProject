@@ -57,30 +57,16 @@ export default function EditScene({navigation, route}) {
             console.log("Scene Text: " + scenes.at(sceneIndex).scene_text);
             return (scenes.at(sceneIndex).scene_text);
         }
-    }
-
-    getNextSceneID = (sceneID) => {
-        let sceneIndex = scenes.findIndex(scene => scene.id === sceneID);
-        console.log("Scene Index2: " + sceneIndex);
-        if(sceneIndex != -1) {
-            console.log("Next Scene ID: " + scenes.at(sceneIndex).next_scene_id);
-            let nextSceneID = (scenes.at(sceneIndex).next_scene_id).toString()
-            if(nextSceneID != "") {
-              return nextSceneID;
-            } else {
-              return "No scene after."
-            }
             
-        }
+        //let sceneText =  scenes.at(sceneIndex).scene_text;
+
+        //setCurrentSceneText(sceneText);
     }
 
     const updateSceneText = (id) => {
-
-        
         console.log("Updated text: " + currentSceneText);
-        console.log("Update next scene: " + currentNextSceneID);
-        if(currentSceneText != "") {
-          db.transaction(tx => {
+
+        db.transaction(tx => {
           tx.executeSql('UPDATE scene4 SET scene_text = ? WHERE id = ?', [currentSceneText, id],
             (txObj, resultSet) => {
               if (resultSet.rowsAffected) {
@@ -94,25 +80,6 @@ export default function EditScene({navigation, route}) {
             (txObj, error) => console.log(error)
           );
         });
-        }
-        
-        if(currentNextSceneID != "") {
-          db.transaction(tx => {
-            tx.executeSql('UPDATE scene4 SET next_scene_id = ? WHERE id = ?', [currentNextSceneID, id],
-              (txObj, resultSet) => {
-                if (resultSet.rowsAffected) {
-                  let existingScenes = [...scenes];
-                  const indexToUpdate = existingScenes.findIndex(scene => scene.id === id);
-                  existingScenes[indexToUpdate].next_scene_id = currentNextSceneID;
-                  setScenes(existingScenes);
-                  setCurrentNextSceneID("");
-                }
-              },
-              (txObj, error) => console.log(error)
-            );
-          });
-        }
-        
 
         navigation.navigate("Story Graph");
     };
@@ -127,7 +94,6 @@ export default function EditScene({navigation, route}) {
         <View style={styles.container}>
             <Text>Scene: {route.params.sceneID}</Text>
             <TextInput defaultValue={getSceneText(route.params.sceneID)} onChangeText={trackChanges} multiline={true}/>
-            <TextInput keyboardType='number-pad' defaultValue={getNextSceneID(route.params.sceneID)} onChangeText={setCurrentNextSceneID}/>
             <Button title="Save Changes" onPress={() => updateSceneText(route.params.sceneID)}/>
         </View>
     )
