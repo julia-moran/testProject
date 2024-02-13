@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"name": "SSH FS - csitrd",
+			"uri": "ssh://csitrd/home/students.kutztown.edu/jmora678"
+		}
+	],
+	"settings": {}
+}

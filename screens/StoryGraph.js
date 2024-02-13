@@ -7,7 +7,7 @@ export default function StoryGraph({navigation, route}) {
   const [isLoading, setIsLoading] = useState(true);
   const [scenes, setScenes] = useState([]);
   const [choices, setChoices] = useState([]);
-  const storyID = route.params.storyID;
+  const storyID = 1;//route.params.storyID;
 
   useEffect(() => {
     db.transaction(tx => {

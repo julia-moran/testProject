@@ -13,7 +13,7 @@ import SelectStory from './screens/SelectStory';
 
 const Stack = createNativeStackNavigator();
 
-//AppRegistry.registerComponent('main', () => App);
+//AppRegistry.registerComponent('main', () => App);<Stack.Screen name="Select Story" component={SelectStory}/>
 
 
 
@@ -21,8 +21,8 @@ function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName='Select Story'>
-        <Stack.Screen name="Select Story" component={SelectStory}/>
+      <Stack.Navigator initialRouteName='Story Graph'>
+        
         <Stack.Screen name="Story Graph" component={StoryGraph}/>
         <Stack.Screen name="Write Scene" component={WriteScene}/>
         <Stack.Screen name="Run Story" component={RunStory}/>

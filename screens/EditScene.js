@@ -52,20 +52,20 @@ export default function EditScene({navigation, route}) {
         }
 
     getSceneText = (sceneID) => {
-        console.log("Scene ID: " + sceneID);
+        //console.log("Scene ID: " + sceneID);
         let sceneIndex = scenes.findIndex(scene => scene.id === sceneID);
-        console.log("Scene Index: " + sceneIndex);
+        //console.log("Scene Index: " + sceneIndex);
         if(sceneIndex != -1) {
-            console.log("Scene Text: " + scenes.at(sceneIndex).scene_text);
+            //console.log("Scene Text: " + scenes.at(sceneIndex).scene_text);
             return (scenes.at(sceneIndex).scene_text);
         }
     }
 
     getNextSceneID = (sceneID) => {
         let sceneIndex = scenes.findIndex(scene => scene.id === sceneID);
-        console.log("Scene Index2: " + sceneIndex);
+        //console.log("Scene Index2: " + sceneIndex);
         if(sceneIndex != -1) {
-            console.log("Next Scene ID: " + scenes.at(sceneIndex).next_scene_id);
+           // console.log("Next Scene ID: " + scenes.at(sceneIndex).next_scene_id);
             let nextSceneID = (scenes.at(sceneIndex).next_scene_id).toString()
             if(nextSceneID != "") {
               return nextSceneID;
@@ -79,8 +79,8 @@ export default function EditScene({navigation, route}) {
     const updateSceneText = (id) => {
 
         
-        console.log("Updated text: " + currentSceneText);
-        console.log("Update next scene: " + currentNextSceneID);
+        //console.log("Updated text: " + currentSceneText);
+        //console.log("Update next scene: " + currentNextSceneID);
         if(currentSceneText != "") {
           db.transaction(tx => {
           tx.executeSql('UPDATE scene5 SET scene_text = ? WHERE id = ? and story_id = ?', [currentSceneText, id, storyID],
@@ -121,8 +121,8 @@ export default function EditScene({navigation, route}) {
 
     const trackChanges = (text) => {
         setCurrentSceneText(text);
-        console.log("New: " + text);
-        console.log("Current Scene Text: " + currentSceneText);
+        //console.log("New: " + text);
+        //console.log("Current Scene Text: " + currentSceneText);
     }
 
     return (
