@@ -49,7 +49,7 @@ export default function RunStory({navigation}) {
       }
 
       const getChoices = (sceneID) => {
-        console.log(sceneID);
+        //console.log(sceneID);
         db.transaction(tx => {
           tx.executeSql('SELECT * FROM choice2 WHERE scene_id = ?', [sceneID],
             (txObj, resultChoices) => {
@@ -63,7 +63,7 @@ export default function RunStory({navigation}) {
       }
 
       const showChoiceButtons = () => {
-        console.log(choicesInRun);
+        //console.log(choicesInRun);
         return choicesInRun.map((choiceInRun, index) => {
           return (
             <View key={index} style={styles.row}>
@@ -75,11 +75,11 @@ export default function RunStory({navigation}) {
     
       const goToSceneByChoice = (choiceID) => {
         let choiceIndex = choices.findIndex(choice => choice.id === choiceID)
-        console.log("Choice ID: " + choiceID);
+        //console.log("Choice ID: " + choiceID);
         let nextSceneID = choices.at(choiceIndex).next_scene_id;
         let sceneIndex = scenes.findIndex(scene => scene.id === nextSceneID);
         
-        console.log("Next Scene: " + sceneIndex);
+        //console.log("Next Scene: " + sceneIndex);
     
     
         setSceneTextInRun(scenes.at(sceneIndex).scene_text);
@@ -97,10 +97,10 @@ export default function RunStory({navigation}) {
     
       const getNextScene = () => {
         let nextSceneID = scenes.findIndex(scene => scene.id === nextSceneInRun);
-        console.log("Test getNextScene: " + nextSceneID);
+        //console.log("Test getNextScene: " + nextSceneID);
         setSceneTextInRun(scenes.at(nextSceneID).scene_text);
         setNextSceneInRun(scenes.at(nextSceneID).next_scene_id);
-        console.log("Scene to go: " + nextSceneInRun);
+        //console.log("Scene to go: " + nextSceneInRun);
         setSceneIDInRun(scenes.at(nextSceneID).id);
         getChoices(scenes.at(nextSceneID).id);
       };

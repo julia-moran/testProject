@@ -119,8 +119,8 @@ export default function EditScene({navigation, route}) {
 
     const trackChanges = (text) => {
         setCurrentSceneText(text);
-        console.log("New: " + text);
-        console.log("Current Scene Text: " + currentSceneText);
+        //console.log("New: " + text);
+        //console.log("Current Scene Text: " + currentSceneText);
     }
 
     return (

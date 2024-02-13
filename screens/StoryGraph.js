@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TextInput, Button, Alert } from 'react-native';
 import * as SQLite from 'expo-sqlite';
 
+//import Draggable from 'react-native-draggable';
+
 export default function StoryGraph({navigation}) {
   const db = SQLite.openDatabase('test.db');
   const [isLoading, setIsLoading] = useState(true);
