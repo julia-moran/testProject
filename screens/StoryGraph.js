@@ -1,39 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
+import * as FileSystem from 'expo-file-system';
 import * as SQLite from 'expo-sqlite';
+import { Asset } from 'expo-asset';
+
 
 //import Draggable from 'react-native-draggable';
 
+if(!( FileSystem.getInfoAsync(FileSystem.documentDirectory + 'SQLite')).exists) {
+   FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'SQLite');
+}
+ FileSystem.downloadAsync(
+  Asset.fromModule(require('../stories.db')).uri,
+  FileSystem.documentDirectory + 'SQLite/stories.db'
+);
+
+const db = SQLite.openDatabase('stories.db');
+
 export default function StoryGraph({navigation}) {
-  const db = SQLite.openDatabase('test.db');
   const [isLoading, setIsLoading] = useState(true);
-  const [scenes, setScenes] = useState([]);
-  const [choices, setChoices] = useState([]);
+  const [stories, setStories] = useState([]);
+  //const [choices, setChoices] = useState([]);
 
   useEffect(() => {
-    db.transaction(tx => {
-      tx.executeSql('CREATE TABLE IF NOT EXISTS scene4 (id INTEGER PRIMARY KEY AUTOINCREMENT, scene_text TEXT, next_scene_id INTEGER)')
-    });
-
-    db.transaction(tx => {
-      tx.executeSql('CREATE TABLE IF NOT EXISTS choice2 (id INTEGER PRIMARY KEY AUTOINCREMENT, scene_id INTEGER REFERENCES scene4(id), choice_text TEXT, next_scene_id INTEGER)')
-    });
-
-    db.transaction(tx => {
-      tx.executeSql('SELECT * FROM scene4', null,
-        (txObj, resultSet) => setScenes(resultSet.rows._array),
-        (txObj, error) => console.log(error)
-      );
-    });
-
-    db.transaction(tx => {
-      tx.executeSql('SELECT * FROM choice2', null,
-        (txObj, resultSet) => setChoices(resultSet.rows._array),
-        (txObj, error) => console.log(error)
-      );
-    });
-
     
+    db.transaction(tx => {
+      tx.executeSql('SELECT * FROM story', null,
+        (txObj, resultSet) => console.log(resultSet.rows._array),
+        (txObj, error) => console.log(error)
+      );
+    });
+
     setIsLoading(false);
   }, []);
 
@@ -44,7 +41,7 @@ export default function StoryGraph({navigation}) {
       </View>
     )
   }
-
+/*
   const showScenes = () => {
 
     db.transaction(tx => {
@@ -66,7 +63,7 @@ export default function StoryGraph({navigation}) {
       );
     });
   };
-
+*/
   const showChoices = () => {
     return choices.map((choice, index) => {
       return (
@@ -96,7 +93,7 @@ export default function StoryGraph({navigation}) {
       );
     });
   };
-*/
+
   const deleteScene = (id) => {
     db.transaction(tx => {
       tx.executeSql('DELETE FROM scene4 WHERE id = ?', [id],
@@ -109,12 +106,10 @@ export default function StoryGraph({navigation}) {
         (txObj, error) => console.log(error)
       );
     });
-  };
+  };*/
 
   return (
     <View style={styles.container}>
-      {showScenes()}
-      {showChoices()}
       <Button title="New Scene" onPress={() => navigation.navigate("Write Scene")}/>
       <Button title="Run Story" onPress={() => navigation.navigate("Run Story")}/>
     </View>    

@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
 import * as SQLite from 'expo-sqlite';
 
 export default function WriteScene({navigation}) {
-    const db = SQLite.openDatabase('test.db');
+    const db = SQLite.openDatabase('./test.db');
     const [isLoading, setIsLoading] = useState(true);
     const [scenes, setScenes] = useState([]);
     const [choices, setChoices] = useState([]);
@@ -50,11 +50,16 @@ export default function WriteScene({navigation}) {
       }
 
       const addScene = () => {
+        //console.log("Add scene: " + currentSceneText + currentNextSceneID);
+
         db.transaction(tx => {
           tx.executeSql('INSERT INTO scene4 (scene_text, next_scene_id) values (?, ?)', [currentSceneText, currentNextSceneID],
             (txObj, resultSet) => {
+              console.log("Inserting");
               let existingScenes = [...scenes];
+              console.log("Existing scenes: " + existingScenes);
               existingScenes.push({ id: resultSet.insertId, scene_text: currentSceneText, next_scene_id: currentNextSceneID});
+              console.log("Existing scenes: " + existingScenes);
               setScenes(existingScenes);
               setCurrentSceneText("");
               setCurrentNextSceneID("");
