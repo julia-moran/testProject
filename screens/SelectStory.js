@@ -37,12 +37,35 @@ export default function SelectStory({navigation}) {
     setVisible(false);
   };
 
-  const handleDelete = () => {
-    // The user has pressed the "Delete" button, so here you can do your own logic.
-    // ...Your logic
+  const deleteStory = (storyID) => {
+    db.transaction(tx => {
+      tx.executeSql('DELETE FROM story WHERE story_id = ?', [storyID],
+        (txObj, resultSet) => {
+          if (resultSet.rowsAffected > 0) {
+            let existingStories = [...stories].filter(story => story.story_id !== storyID);
+            setStories(existingStories);
+          }
+        },
+        (txObj, error) => console.log(error)
+      );
+    });
     setVisible(false);
   };
 
+  const addStory = () => {
+    db.transaction(tx => {
+      tx.executeSql('INSERT INTO story (title) VALUES (?)', [newStoryTitle],
+        (txObj, resultSet) => {
+          let existingStories = [...stories];
+          existingStories.push({ story_id: resultSet.insertId, title: newStoryTitle });
+          setStories(existingStories);
+          setNewStoryTitle("");
+        },
+        (txObj, error) => console.log(error)
+      );
+    });
+    setVisible(false);
+  };
 
   //const [choices, setChoices] = useState([]);
 
@@ -70,16 +93,26 @@ export default function SelectStory({navigation}) {
   }
 
   const showStories = () => {
+
+    db.transaction(tx => {
+      tx.executeSql('SELECT * FROM story', null,
+        (txObj, resultSet) => {
+            //console.log(resultSet.rows._array);
+            setStories(resultSet.rows._array)
+        },
+        (txObj, error) => console.log(error)
+      );
+    });
     return stories.map((story, index) => {
         return (
           <View key={index} style={styles.row}>
 
-            <Menu onSelect={value => alert(`Selected number: ${value}`)}>
+            <Menu>
             <MenuTrigger text={story.title} />
             <MenuOptions>
                 <MenuOption value={story.story_id} text="Edit"/>
                 <MenuOption value={story.story_id} text="Run"/>
-                <MenuOption value={story.story_id} text="Delete"/>
+                <MenuOption value={story.story_id} text="Delete" onSelect={() => deleteStory(story.story_id)}/>
             </MenuOptions>
             </Menu>
           </View>
@@ -99,7 +132,7 @@ export default function SelectStory({navigation}) {
         <Dialog.Title>Enter the name of your new story</Dialog.Title>
         <Dialog.Input value={newStoryTitle} placeholder='Title' onChangeText={setNewStoryTitle} ></Dialog.Input>
         <Dialog.Button label="Cancel" onPress={handleCancel} />
-        <Dialog.Button label="Add Story" onPress={handleCancel} />
+        <Dialog.Button label="Add Story" onPress={addStory} />
       </Dialog.Container>
     </View>    
 
